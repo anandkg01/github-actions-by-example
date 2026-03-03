@@ -1,0 +1,53 @@
+name: 03 - Scheduled Job (Cron)
+
+# Trigger: Run on a schedule using cron syntax.
+# This workflow runs every day at 08:00 UTC — no commit needed to trigger it.
+#
+# Cron syntax: minute  hour  day-of-month  month  day-of-week
+#                 0      8       *           *         *
+#
+# Tip: Use https://crontab.guru to generate and verify cron expressions.
+on:
+  schedule:
+    - cron: '0 8 * * *'      # Every day at 08:00 UTC
+
+  # Also allow running this workflow manually from the GitHub UI.
+  # Useful for testing or on-demand runs without waiting for the schedule.
+  workflow_dispatch:
+
+jobs:
+  daily-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out code so we can use scripts from the repo.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Run a health check — simulating a real-world scheduled task.
+      - name: Run scheduled health check
+        run: |
+          echo "Scheduled job started at: $(date -u)"
+          echo ""
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Run number: $GITHUB_RUN_NUMBER"
+          echo ""
+          echo "Health check passed — all systems operational."
+
+      # Step 3: Check an external endpoint — a common real-world use case.
+      - name: Check GitHub API status
+        run: |
+          STATUS=$(curl -s https://www.githubstatus.com/api/v2/status.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['status']['description'])")
+          echo "GitHub Status: $STATUS"
+
+      # Step 4: Write a job summary — content appears as a rich table in the GitHub Actions UI.
+      - name: Write job summary
+        run: |
+          echo "## Daily Health Check Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Run time | $(date -u) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Repository | $GITHUB_REPOSITORY |" >> $GITHUB_STEP_SUMMARY
+          echo "| Run number | $GITHUB_RUN_NUMBER |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | Healthy |" >> $GITHUB_STEP_SUMMARY

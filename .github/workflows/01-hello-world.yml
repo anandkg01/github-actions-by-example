@@ -1,0 +1,29 @@
+name: 01 - Hello World
+
+# Trigger: Run this workflow on every push to the main branch.
+# This is one of the most common triggers you will use.
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # A workflow must have at least one job.
+  # Each job runs in its own isolated virtual machine called a runner.
+  say-hello:
+    # GitHub-hosted Ubuntu runner — free for public repositories.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Print a simple greeting.
+      # The `run` keyword executes shell commands on the runner.
+      - name: Print greeting
+        run: echo "Hello, GitHub Actions!"
+
+      # Step 2: Show some built-in environment variables that GitHub provides.
+      - name: Show context info
+        run: |
+          echo "Repository : $GITHUB_REPOSITORY"
+          echo "Branch     : $GITHUB_REF_NAME"
+          echo "Triggered by: $GITHUB_ACTOR"
+          echo "Run ID     : $GITHUB_RUN_ID"

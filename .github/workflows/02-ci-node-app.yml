@@ -1,0 +1,49 @@
+name: 02 - CI for Node.js App
+
+# Trigger: Run on every push or pull request targeting main.
+# This is the standard CI (Continuous Integration) pattern — test before merge.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '02-ci-node-app/**'   # Only run when files in this scenario change
+  pull_request:
+    branches: [main]
+    paths:
+      - '02-ci-node-app/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Matrix strategy: Test against multiple Node.js versions at once.
+    # This catches compatibility issues across versions early.
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+      # Step 1: Check out the repository code onto the runner.
+      # Without this step, the runner has no access to your files.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up the correct Node.js version from the matrix.
+      # `actions/setup-node` is a reusable, official action.
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'                         # Cache npm dependencies for speed
+          cache-dependency-path: 02-ci-node-app/package.json
+
+      # Step 3: Install dependencies.
+      # `working-directory` scopes the command to the scenario folder.
+      - name: Install dependencies
+        run: npm ci                            # npm ci is faster and stricter than npm install
+        working-directory: 02-ci-node-app
+
+      # Step 4: Run tests.
+      - name: Run tests
+        run: npm test
+        working-directory: 02-ci-node-app
