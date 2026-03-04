@@ -9,7 +9,7 @@ name: 03 - Scheduled Job (Cron)
 # Tip: Use https://crontab.guru to generate and verify cron expressions.
 on:
   schedule:
-    - cron: '0 8 * * *'      # Every day at 08:00 UTC
+    - cron: '0 8 * * 1'      # Every Monday at 08:00 UTC
 
   # Also allow running this workflow manually from the GitHub UI.
   # Useful for testing or on-demand runs without waiting for the schedule.
